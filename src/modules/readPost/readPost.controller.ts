@@ -1,12 +1,12 @@
 import { Controller, Get, HttpCode, HttpStatus, Query } from '@nestjs/common';
 import { ReadPostService } from './readPost.service';
 
-@Controller('post')
+@Controller('')
 export class ReadPostController {
   constructor(private readPostService: ReadPostService) {}
 
   @HttpCode(HttpStatus.OK)
-  @Get('read')
+  @Get('')
   newReadPost(
     @Query('id') id: string,
     @Query('email') email: string,
