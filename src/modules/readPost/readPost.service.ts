@@ -26,7 +26,7 @@ export class ReadPostService {
     utmChannel,
     utmMedium,
     utmSource,
-  }: IRequestNewReadPost): Promise<User | null> {
+  }: IRequestNewReadPost) {
     try {
       const user = await this.prisma.user.findFirst({
         where: {
@@ -56,8 +56,6 @@ export class ReadPostService {
           expiresAt: new Date(),
         },
       });
-
-      return user;
     } catch (error) {
       console.error('Error fetching user:', error);
       throw error;

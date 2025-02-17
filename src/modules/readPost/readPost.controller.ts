@@ -1,13 +1,27 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { IRequestNewReadPost, ReadPostService } from './readPost.service';
+import { Controller, Get, HttpCode, HttpStatus, Query } from '@nestjs/common';
+import { ReadPostService } from './readPost.service';
 
 @Controller('post')
 export class ReadPostController {
   constructor(private readPostService: ReadPostService) {}
 
   @HttpCode(HttpStatus.OK)
-  @Post('read')
-  newReadPost(@Body() signInDto: IRequestNewReadPost) {
-    return this.readPostService.newReadPost(signInDto);
+  @Get('read')
+  newReadPost(
+    @Query('id') id: string,
+    @Query('email') email: string,
+    @Query('utm_source') utmSource: string,
+    @Query('utm_medium') utmMedium: string,
+    @Query('utm_campaign') utmCampaign: string,
+    @Query('utm_channel') utmChannel: string,
+  ) {
+    return this.readPostService.newReadPost({
+      email,
+      id,
+      utmCampaign,
+      utmChannel,
+      utmMedium,
+      utmSource,
+    });
   }
 }
