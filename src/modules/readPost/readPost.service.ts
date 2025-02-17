@@ -28,17 +28,9 @@ export class ReadPostService {
     utmSource,
   }: IRequestNewReadPost) {
     try {
-      const user = await this.prisma.user.findFirst({
-        where: {
-          email,
-        },
-      });
-
-      if (!user) throw new UnauthorizedException();
-
       const alreadyExists = await this.prisma.readPost.findFirst({
         where: {
-          userEmail: user.email,
+          userEmail: email,
           resourceId: id,
         },
       });
@@ -47,7 +39,7 @@ export class ReadPostService {
 
       await this.prisma.readPost.create({
         data: {
-          userEmail: user.email,
+          userEmail: email,
           resourceId: id,
           utmCampaign,
           utmChannel,

@@ -12,20 +12,20 @@ model User {
   email     String   @unique 
   password  String  
   createdAt DateTime @default(now())
-  posts     ReadPost[]
 }
 
 model ReadPost {
   id         Int      @id @default(autoincrement())
   userEmail  String     
-  resourceId String   @unique 
+  resourceId String 
   utmSource  String?  
   utmMedium  String?
   utmCampaign String?
   utmChannel String?
   createdAt  DateTime @default(now())
   expiresAt  DateTime 
-  user       User     @relation(fields: [userEmail], references: [email])
+
+  @@unique([userEmail, resourceId])
 }
 
 

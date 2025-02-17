@@ -10,17 +10,8 @@ export class ReadPostController {
   newReadPost(@Query() queryParams: Record<string, string>) {
     console.log('All Query Params:', queryParams);
 
-    const {
-      email,
-      id,
-      utm_source,
-      utm_medium,
-      utm_campaign,
-      utm_channel,
-      ...extraParams
-    } = queryParams;
-
-    console.log({ extraParams });
+    const { email, id, utm_source, utm_medium, utm_campaign, utm_channel } =
+      queryParams;
 
     return this.readPostService.newReadPost({
       email,
