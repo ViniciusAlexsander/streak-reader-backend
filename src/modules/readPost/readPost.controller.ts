@@ -7,21 +7,28 @@ export class ReadPostController {
 
   @HttpCode(HttpStatus.OK)
   @Get('')
-  newReadPost(
-    @Query('id') id: string,
-    @Query('email') email: string,
-    @Query('utm_source') utmSource: string,
-    @Query('utm_medium') utmMedium: string,
-    @Query('utm_campaign') utmCampaign: string,
-    @Query('utm_channel') utmChannel: string,
-  ) {
+  newReadPost(@Query() queryParams: Record<string, string>) {
+    console.log('All Query Params:', queryParams);
+
+    const {
+      email,
+      id,
+      utm_source,
+      utm_medium,
+      utm_campaign,
+      utm_channel,
+      ...extraParams
+    } = queryParams;
+
+    console.log({ extraParams });
+
     return this.readPostService.newReadPost({
       email,
       id,
-      utmCampaign,
-      utmChannel,
-      utmMedium,
-      utmSource,
+      utmCampaign: utm_campaign,
+      utmChannel: utm_channel,
+      utmMedium: utm_medium,
+      utmSource: utm_source,
     });
   }
 }
