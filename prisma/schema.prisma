@@ -1,0 +1,32 @@
+// schema.prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")  // Your database connection string
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        Int      @id @default(autoincrement()) // Primary key, auto-incrementing
+  email     String   @unique // Email field must be unique
+  password  String   // Password for the user (store hashed)
+  createdAt DateTime @default(now()) // Date the user was created
+  posts     ReadPost[] // Relation to ReadPost
+}
+
+model ReadPost {
+  id         Int      @id @default(autoincrement()) // Primary key, auto-incrementing
+  userEmail  String      // Foreign key to User
+  resourceId String   @unique // Unique resource ID for the post
+  utmSource  String?  // UTM parameters
+  utmMedium  String?
+  utmCampaign String?
+  utmChannel String?
+  createdAt  DateTime @default(now()) // Date the post was read
+  expiresAt  DateTime // Expiration date of the record
+  user       User     @relation(fields: [userEmail], references: [email]) // Foreign key relation to User
+}
+
+
