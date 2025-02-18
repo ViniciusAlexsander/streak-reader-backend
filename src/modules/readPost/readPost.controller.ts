@@ -1,4 +1,11 @@
-import { Controller, Get, HttpCode, HttpStatus, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Query,
+} from '@nestjs/common';
 import { ReadPostService } from './readPost.service';
 
 @Controller('')
@@ -21,5 +28,17 @@ export class ReadPostController {
       utmMedium: utm_medium,
       utmSource: utm_source,
     });
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Get('ranking')
+  getAllUserStreaks() {
+    return this.readPostService.getAllUserStreaks();
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Get('ranking/:email')
+  getOneUserStreaks(@Param('email') email: string) {
+    return this.readPostService.getOneUserStreaks(email);
   }
 }

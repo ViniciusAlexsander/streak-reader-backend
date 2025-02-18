@@ -23,7 +23,6 @@ model ReadPost {
   utmCampaign String?
   utmChannel String?
   createdAt  DateTime @default(now())
-  expiresAt  DateTime 
 
   @@unique([userEmail, resourceId])
 }
