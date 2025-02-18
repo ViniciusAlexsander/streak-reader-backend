@@ -20,7 +20,6 @@ export interface IFindPost {
   userEmail: string;
   resourceId: string;
   createdAt: Date;
-  expiresAt: Date;
 }
 
 @Injectable()
@@ -53,7 +52,6 @@ export class ReadPostService {
           utmChannel,
           utmMedium,
           utmSource,
-          expiresAt: new Date(),
         },
       });
     } catch (error) {
