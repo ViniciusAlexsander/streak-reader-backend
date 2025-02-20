@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, PreconditionFailedException } from '@nestjs/common';
 import { User } from '@prisma/client';
+import { ICreateUser } from 'src/models/users';
 import { PrismaService } from '../prisma/database.service';
 
 @Injectable()
@@ -11,6 +12,17 @@ export class UsersService {
       where: {
         email,
       },
+    });
+  }
+
+  async createUser(user: ICreateUser): Promise<void> {
+    const userAlreadyExists = await this.findOne(user.email);
+
+    if (userAlreadyExists)
+      throw new PreconditionFailedException('User already exists');
+
+    await this.prisma.user.create({
+      data: user,
     });
   }
 }
