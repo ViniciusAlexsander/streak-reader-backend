@@ -61,7 +61,6 @@ export class ReadPostService {
   }
 
   async getOneUserStreaks(email: string) {
-    console.log({ email });
     const allReadPosts: IFindPost[] = await this.prisma.readPost.findMany({
       where: {
         userEmail: email,
@@ -75,8 +74,12 @@ export class ReadPostService {
 
     let dateToCompare = new Date();
     let dailyStreak = 0;
-    allReadPosts.forEach((post) => {
-      if (isSunday(dateToCompare)) {
+    allReadPosts.forEach((post, index) => {
+      if (
+        isSunday(dateToCompare) ||
+        (isSameDay(post.createdAt, subtractDay(dateToCompare, 1)) &&
+          index === 0)
+      ) {
         dateToCompare = subtractDay(dateToCompare, 1);
       }
       if (isSameDay(post.createdAt, dateToCompare)) {
@@ -89,38 +92,19 @@ export class ReadPostService {
   }
 
   async getAllUserStreaks() {
-    const result: {
-      userEmail: string;
-      end_date: Date;
-      start_date: Date;
-      streak_days: number;
-    }[] = await this.prisma.$queryRaw`
-      WITH consecutive_days AS (
-          SELECT 
-              "userEmail",
-              DATE_TRUNC('day', "createdAt") AS day,
-              DATE_TRUNC('day', "createdAt") - INTERVAL '1 day' * RANK() OVER (
-                  PARTITION BY "userEmail" 
-                  ORDER BY DATE_TRUNC('day', "createdAt")
-              ) AS streak_group
-          FROM "ReadPost"
-          GROUP BY "userEmail", DATE_TRUNC('day', "createdAt")
-      )
-      SELECT 
-          "userEmail", 
-          COUNT(DISTINCT day) AS streak_days,
-          MIN(day) AS start_date,
-          MAX(day) AS end_date
-      FROM consecutive_days
-      GROUP BY "userEmail", streak_group
-      ORDER BY "userEmail", start_date DESC;
-    `;
+    const topUsers = await this.prisma.readPost.groupBy({
+      by: ['userEmail'],
+      _count: {
+        createdAt: true, // Count of read posts per user
+      },
+      orderBy: {
+        _count: {
+          createdAt: 'desc', // Sort by most read posts
+        },
+      },
+      take: 10, // Limit to top 10 users
+    });
 
-    return result.map((row) => ({
-      streak_days: Number(row.streak_days),
-      start_date: row.start_date,
-      end_date: row.end_date,
-      userEmail: row.userEmail,
-    }));
+    return topUsers;
   }
 }
