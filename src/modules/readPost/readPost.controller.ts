@@ -37,7 +37,7 @@ export class ReadPostController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @Get('ranking/:email')
+  @Get('streaks/:email')
   getOneUserStreaks(@Param('email') email: string) {
     return this.readPostService.getOneUserStreaks(email);
   }
