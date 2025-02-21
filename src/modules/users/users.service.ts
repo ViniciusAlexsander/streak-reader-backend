@@ -2,6 +2,7 @@ import { Injectable, PreconditionFailedException } from '@nestjs/common';
 import { User } from '@prisma/client';
 import { ICreateUser } from 'src/models/users';
 import { PrismaService } from '../prisma/database.service';
+import { Role } from 'src/utils/enum/role.enum';
 
 @Injectable()
 export class UsersService {
@@ -22,7 +23,10 @@ export class UsersService {
       throw new PreconditionFailedException('User already exists');
 
     await this.prisma.user.create({
-      data: user,
+      data: {
+        ...user,
+        role: Role.User,
+      },
     });
   }
 }
