@@ -4,15 +4,11 @@ import {
   PreconditionFailedException,
 } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
-import {
-  IFindPost,
-  IRequestNewReadPost,
-  IUsersStreaksRequest,
-} from 'src/models/streaks';
+import { IRequestNewReadPost, IUsersStreaksRequest } from 'src/models/streaks';
 import { IUserActivity } from 'src/models/users';
 import { calculateDailyStreak } from 'src/utils/date';
-import { PrismaService } from '../prisma/database.service';
 import { Role } from 'src/utils/enum/role.enum';
+import { PrismaService } from '../prisma/database.service';
 
 @Injectable()
 export class ReadPostService {
@@ -27,6 +23,23 @@ export class ReadPostService {
     utmSource,
   }: IRequestNewReadPost) {
     try {
+      const alreadyExistsUser = await this.prisma.user.findFirst({
+        where: {
+          email,
+        },
+      });
+
+      if (!alreadyExistsUser) {
+        await this.prisma.user.create({
+          data: {
+            email,
+            name: '',
+            password: '',
+            role: Role.User,
+          },
+        });
+      }
+
       const alreadyExists = await this.prisma.readPost.findFirst({
         where: {
           userEmail: email,
