@@ -106,6 +106,11 @@ export class ReadPostService {
           actualStreak: true,
           recordStreak: true,
           updatedAt: true,
+          _count: {
+            select: {
+              readPosts: true,
+            },
+          },
         },
         take: pageSize,
         skip: (page - 1) * pageSize,

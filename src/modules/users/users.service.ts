@@ -8,17 +8,17 @@ import { Role } from 'src/utils/enum/role.enum';
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  async findOne(email: string): Promise<User | null> {
+  async findOne(email: string, hasRegister = false): Promise<User | null> {
     return await this.prisma.user.findUnique({
       where: {
         email,
-        AND: [{ name: '' }, { password: '' }],
+        AND: hasRegister ? [{ name: '' }, { password: '' }] : [],
       },
     });
   }
 
   async createUser(user: ICreateUser): Promise<void> {
-    const userAlreadyExists = await this.findOne(user.email);
+    const userAlreadyExists = await this.findOne(user.email, true);
 
     if (
       userAlreadyExists &&

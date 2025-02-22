@@ -8,27 +8,30 @@ generator client {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String
-  password  String
-  role      String
-  actualStreak Int   @default(0)
-  recordStreak Int   @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            Int       @id @default(autoincrement())
+  email         String    @unique
+  name          String
+  password      String
+  role          String
+  actualStreak  Int       @default(0)
+  recordStreak  Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  readPosts     ReadPost[]
 }
 
 model ReadPost {
-  id         Int      @id @default(autoincrement())
-  userEmail  String     
-  resourceId String 
-  utmSource  String?  
-  utmMedium  String?
-  utmCampaign String?
-  utmChannel String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt @default(now())
+  id           Int       @id @default(autoincrement())
+  userEmail    String
+  resourceId   String
+  utmSource    String?
+  utmMedium    String?
+  utmCampaign  String?
+  utmChannel   String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt @default(now())
+
+  user         User      @relation(fields: [userEmail], references: [email])
 
   @@unique([userEmail, resourceId])
 }
