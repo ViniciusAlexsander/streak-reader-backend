@@ -8,12 +8,11 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ReadPostService } from './readPost.service';
 import { Role } from 'src/utils/enum/role.enum';
-import { Roles } from '../auth/roles.decorator';
 import { AuthGuard } from '../auth/auth.guard';
+import { Roles } from '../auth/roles.decorator';
 import { RolesGuard } from '../auth/roles.guard';
-import { IUsersStreaksRequest } from 'src/models/streaks';
+import { ReadPostService } from './readPost.service';
 
 @Controller('')
 export class ReadPostController {
