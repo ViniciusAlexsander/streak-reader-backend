@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN     "actualStreak" INTEGER NOT NULL DEFAULT 0,
+ADD COLUMN     "recordStreak" INTEGER NOT NULL DEFAULT 0;

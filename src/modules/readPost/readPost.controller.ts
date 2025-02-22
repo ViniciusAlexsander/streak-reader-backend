@@ -4,6 +4,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -12,6 +13,7 @@ import { Role } from 'src/utils/enum/role.enum';
 import { Roles } from '../auth/roles.decorator';
 import { AuthGuard } from '../auth/auth.guard';
 import { RolesGuard } from '../auth/roles.guard';
+import { IUsersStreaksRequest } from 'src/models/streaks';
 
 @Controller('')
 export class ReadPostController {
@@ -36,17 +38,28 @@ export class ReadPostController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @Get('ranking')
-  @Roles(Role.Admin)
-  @UseGuards(AuthGuard, RolesGuard)
-  getAllUserStreaks() {
-    return this.readPostService.getAllUserStreaks();
-  }
-
-  @HttpCode(HttpStatus.OK)
   @Get('streaks/:email')
   @UseGuards(AuthGuard)
   getOneUserStreaks(@Param('email') email: string) {
     return this.readPostService.getOneUserStreaks(email);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Get('ranking')
+  getAllUserStreaks(@Query() query: { page: string; pageSize: string }) {
+    return this.readPostService.getAllUserStreaks({
+      page: query.page ? Number(query.page) : 1,
+      pageSize: query.pageSize ? Number(query.pageSize) : 10,
+    });
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Roles(Role.Admin)
+  @UseGuards(AuthGuard, RolesGuard)
+  @Put('ranking')
+  updateAllUserStreaks() {
+    return this.readPostService.updateAllUserStreaks();
   }
 }

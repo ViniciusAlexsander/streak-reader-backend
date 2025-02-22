@@ -19,4 +19,25 @@ function subtractDay(date: Date, daysToSubtract: number): Date {
   return newDate;
 }
 
-export { subtractDay, isSameDay, isSunday };
+function calculateDailyStreak(postDates: Date[]) {
+  let dateToCompare = new Date();
+  let dailyStreak = 0;
+  postDates
+    .sort((a, b) => b.getTime() - a.getTime())
+    .forEach((postReadDate, index) => {
+      if (
+        isSunday(dateToCompare) ||
+        (isSameDay(postReadDate, subtractDay(dateToCompare, 1)) && index === 0)
+      ) {
+        dateToCompare = subtractDay(dateToCompare, 1);
+      }
+      if (isSameDay(postReadDate, dateToCompare)) {
+        dailyStreak += 1;
+        dateToCompare = subtractDay(postReadDate, 1);
+      }
+    });
+
+  return dailyStreak;
+}
+
+export { subtractDay, isSameDay, isSunday, calculateDailyStreak };
