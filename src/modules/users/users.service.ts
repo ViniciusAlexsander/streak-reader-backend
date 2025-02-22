@@ -12,6 +12,7 @@ export class UsersService {
     return await this.prisma.user.findUnique({
       where: {
         email,
+        AND: [{ name: '' }, { password: '' }],
       },
     });
   }
@@ -19,13 +20,23 @@ export class UsersService {
   async createUser(user: ICreateUser): Promise<void> {
     const userAlreadyExists = await this.findOne(user.email);
 
-    if (userAlreadyExists)
+    if (
+      userAlreadyExists &&
+      userAlreadyExists.name !== '' &&
+      userAlreadyExists.password !== ''
+    )
       throw new PreconditionFailedException('User already exists');
 
-    await this.prisma.user.create({
-      data: {
+    await this.prisma.user.upsert({
+      create: {
         ...user,
         role: Role.User,
+      },
+      where: {
+        email: user.email,
+      },
+      update: {
+        ...user,
       },
     });
   }

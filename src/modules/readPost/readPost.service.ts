@@ -12,6 +12,7 @@ import {
 import { IUserActivity } from 'src/models/users';
 import { calculateDailyStreak } from 'src/utils/date';
 import { PrismaService } from '../prisma/database.service';
+import { Role } from 'src/utils/enum/role.enum';
 
 @Injectable()
 export class ReadPostService {
@@ -133,18 +134,37 @@ export class ReadPostService {
     timeZone: 'America/Sao_Paulo',
   })
   async updateAllUserStreaks() {
-    const oneHourAgo = new Date();
-    oneHourAgo.setHours(oneHourAgo.getHours() - 1);
-    const users = await this.prisma.user.findMany({
-      select: { id: true, email: true, actualStreak: true, recordStreak: true },
+    const notRegisteredEmails = await this.prisma.readPost.findMany({
+      select: {
+        userEmail: true,
+      },
+      distinct: ['userEmail'],
       where: {
-        updatedAt: {
-          lt: oneHourAgo,
+        userEmail: {
+          notIn: (
+            await this.prisma.user.findMany({
+              select: { email: true },
+            })
+          ).map((user) => user.email),
         },
       },
     });
 
-    console.log(users.length);
+    await this.prisma.user.createMany({
+      data: notRegisteredEmails.map((user) => {
+        return {
+          email: user.userEmail,
+          name: '',
+          password: '',
+          role: Role.User,
+        };
+      }),
+      skipDuplicates: true,
+    });
+
+    const users = await this.prisma.user.findMany({
+      select: { id: true, email: true, actualStreak: true, recordStreak: true },
+    });
 
     const userActivities = await this.prisma.readPost.findMany({
       where: { userEmail: { in: users.map((user) => user.email) } },
