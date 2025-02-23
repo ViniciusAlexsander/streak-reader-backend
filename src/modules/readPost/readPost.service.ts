@@ -131,7 +131,7 @@ export class ReadPostService {
             },
           }
         : {};
-    const [users] = await this.prisma.$transaction([
+    const [users, totalCount] = await this.prisma.$transaction([
       this.prisma.user.findMany({
         orderBy: {
           actualStreak: 'desc',
@@ -151,9 +151,9 @@ export class ReadPostService {
         take: pageSize,
         skip: (page - 1) * pageSize,
       }),
+      this.prisma.user.count({ where }),
     ]);
 
-    const totalCount = users.length;
     const totalPages = Math.ceil(totalCount / pageSize);
 
     return {
