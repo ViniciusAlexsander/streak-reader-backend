@@ -20,8 +20,6 @@ export class UsersService {
   async createUser(user: ICreateUser): Promise<void> {
     const userAlreadyExists = await this.findOne(user.email);
 
-    console.log(userAlreadyExists, user.email);
-
     if (
       userAlreadyExists &&
       userAlreadyExists.name !== '' &&

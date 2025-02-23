@@ -108,12 +108,35 @@ export class ReadPostService {
     };
   }
 
-  async getAllUserStreaks({ page, pageSize }: IUsersStreaksRequest) {
-    const [users, totalCount] = await this.prisma.$transaction([
+  async getAllUserStreaks({
+    page,
+    pageSize,
+    month,
+    year,
+  }: IUsersStreaksRequest) {
+    let startDate: Date | undefined;
+    let endDate: Date | undefined;
+
+    if (year && month) {
+      startDate = new Date(year, month - 1, 1);
+      endDate = new Date(year, month, 0, 23, 59, 59, 999);
+    }
+
+    const where =
+      startDate && endDate
+        ? {
+            updatedAt: {
+              gte: startDate,
+              lte: endDate,
+            },
+          }
+        : {};
+    const [users] = await this.prisma.$transaction([
       this.prisma.user.findMany({
         orderBy: {
           actualStreak: 'desc',
         },
+        where,
         select: {
           email: true,
           actualStreak: true,
@@ -128,9 +151,9 @@ export class ReadPostService {
         take: pageSize,
         skip: (page - 1) * pageSize,
       }),
-      this.prisma.user.count(),
     ]);
 
+    const totalCount = users.length;
     const totalPages = Math.ceil(totalCount / pageSize);
 
     return {

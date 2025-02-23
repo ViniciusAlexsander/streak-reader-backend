@@ -21,4 +21,6 @@ export interface IFindPost {
 export interface IUsersStreaksRequest {
   page: number;
   pageSize: number;
+  year?: number;
+  month?: number;
 }

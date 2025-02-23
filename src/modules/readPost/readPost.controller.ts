@@ -21,8 +21,6 @@ export class ReadPostController {
   @HttpCode(HttpStatus.OK)
   @Get('')
   newReadPost(@Query() queryParams: Record<string, string>) {
-    console.log('All Query Params:', queryParams);
-
     const { email, id, utm_source, utm_medium, utm_campaign, utm_channel } =
       queryParams;
 
@@ -47,10 +45,20 @@ export class ReadPostController {
   @Roles(Role.Admin)
   @UseGuards(AuthGuard, RolesGuard)
   @Get('ranking')
-  getAllUserStreaks(@Query() query: { page: string; pageSize: string }) {
+  getAllUserStreaks(
+    @Query()
+    query: {
+      page: number;
+      pageSize: number;
+      year?: number;
+      month?: number;
+    },
+  ) {
     return this.readPostService.getAllUserStreaks({
       page: query.page ? Number(query.page) : 1,
       pageSize: query.pageSize ? Number(query.pageSize) : 10,
+      month: query.month ? query.month : new Date().getMonth() + 1,
+      year: query.year ? query.year : new Date().getFullYear(),
     });
   }
 
